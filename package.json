@@ -12,7 +12,8 @@
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "generate:assets": "tsx scripts/generate-og.ts"
+    "generate:assets": "tsx scripts/generate-og.ts",
+    "sync:waitlist": "tsx scripts/sync-waitlist-to-resend.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.4.0",
