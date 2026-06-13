@@ -1,16 +1,30 @@
 "use client";
 
 import { m } from "framer-motion";
-import { Check } from "lucide-react";
 import { Reveal, useStaggerVariants } from "@/components/ui/Reveal";
 import { appUrl } from "@/lib/site";
+
+interface Feature {
+  /** Main feature text, including its leading emoji marker. */
+  label: string;
+  /** Small italic parenthetical rendered inline after the label. */
+  note?: string;
+  /** Inline pill badge rendered after the label. */
+  badge?: "beta" | "soon";
+  /** Lighter, smaller explanation rendered on its own line below the label. */
+  detail?: string;
+}
 
 interface Plan {
   name: string;
   price: string;
   tagline: string;
-  features: string[];
+  features: Feature[];
   featured?: boolean;
+  /** Subtle limitation note shown below the feature list (Free tier). */
+  limitation?: string;
+  /** Show the "more features on the way" footer line (paid tiers). */
+  comingSoon?: boolean;
 }
 
 const PLANS: Plan[] = [
@@ -18,43 +32,63 @@ const PLANS: Plan[] = [
     name: "Free",
     price: "$0",
     tagline: "Get started with one currency",
-    features: ["1 currency", "3-month history", "20 chats/day", "Budget alerts"],
+    features: [
+      { label: "💬 Chat-based expense logging" },
+      { label: "🧠 20-message memory window" },
+      { label: "📊 Basic dashboard & analytics" },
+      { label: "🎯 Budget tracking (up to 3 budgets)" },
+      { label: "💱 Single currency" },
+      { label: "🔥 Spending streak" },
+    ],
+    limitation:
+      "Free users have a 20-message memory window — the AI remembers your last 20 messages only.",
   },
   {
     name: "Pro",
     price: "$4.99",
     tagline: "For multi-currency earners",
     features: [
-      "Unlimited currencies",
-      "Full history",
-      "Portfolio tracking",
-      "Market insights",
-      "Data export",
+      { label: "✅ Everything in Free" },
+      { label: "🧠 90-day conversation memory" },
+      { label: "💱 Unlimited currencies & accounts" },
+      { label: "🧾 Receipt scanning", note: "20 scans/day" },
+      { label: "📈 Advanced analytics" },
+      { label: "🔔 Budget alerts & daily spending summary" },
+      { label: "🔥 Streak repair", note: "recover a missed day, once", badge: "soon" },
+      { label: "🎙️ Voice chat", badge: "beta" },
+      { label: "📬 Priority support" },
     ],
     featured: true,
+    comingSoon: true,
   },
   {
     name: "Premium",
     price: "$9.99",
     tagline: "For those who want a true AI coach",
     features: [
-      "Everything in Pro",
-      "Full memory dossier",
-      "Proactive AI coaching",
-      "Predictive alerts",
-      "Priority support",
+      { label: "✅ Everything in Pro" },
+      {
+        label: "🧠 Permanent memory dossier",
+        detail: "the agent remembers your full financial history — forever",
+      },
+      { label: "🧾 Receipt scanning", note: "50 scans/day" },
+      { label: "🤖 AI coaching & proactive spending insights" },
+      { label: "📅 Monthly budget review with AI" },
+      { label: "🔥 Streak repair", note: "recover a missed day, once", badge: "soon" },
     ],
+    comingSoon: true,
   },
   {
     name: "Family",
     price: "$14.99",
     tagline: "For couples and families",
     features: [
-      "Up to 5 members",
-      "Shared workspace",
-      "Per-member dossier",
-      "All Premium features",
+      { label: "✅ Everything in Premium" },
+      { label: "👨‍👩‍👧 Up to 5 members" },
+      { label: "🏠 Shared workspace" },
+      { label: "👤 Per-member spending views" },
     ],
+    comingSoon: true,
   },
 ];
 
@@ -100,7 +134,7 @@ export function PricingSection() {
                   className="absolute right-5 top-5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
                   style={{ backgroundColor: "var(--color-accent)", color: "#ffffff" }}
                 >
-                  Popular
+                  Most Popular
                 </span>
               ) : null}
 
@@ -123,12 +157,42 @@ export function PricingSection() {
 
               <ul className="mt-5 flex flex-1 flex-col gap-2.5">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                    <Check size={16} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} aria-hidden />
-                    {feature}
+                  <li key={feature.label} className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+                    <span className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+                      <span>{feature.label}</span>
+                      {feature.note ? (
+                        <span className="italic" style={{ color: "var(--color-text-muted)" }}>
+                          ({feature.note})
+                        </span>
+                      ) : null}
+                      {feature.badge ? <span className="badge-pill">{feature.badge}</span> : null}
+                    </span>
+                    {feature.detail ? (
+                      <span className="mt-0.5 block text-xs leading-snug" style={{ color: "var(--color-text-muted)" }}>
+                        {feature.detail}
+                      </span>
+                    ) : null}
                   </li>
                 ))}
               </ul>
+
+              {plan.limitation ? (
+                <p
+                  className="mt-4 border-t pt-3 text-xs italic leading-snug"
+                  style={{ color: "var(--color-text-tertiary)", borderColor: "var(--color-border)" }}
+                >
+                  {plan.limitation}
+                </p>
+              ) : null}
+
+              {plan.comingSoon ? (
+                <p
+                  className="mt-4 border-t pt-3 text-xs"
+                  style={{ color: "var(--color-text-tertiary)", borderColor: "var(--color-border)" }}
+                >
+                  🚀 More features on the way
+                </p>
+              ) : null}
 
               <a
                 href={appUrl}
